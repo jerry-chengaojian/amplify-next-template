@@ -20,7 +20,6 @@ const schema = a.schema({
       company: a.string(),
       subject: a.string().required(),
       message: a.string().required(),
-      submittedAt: a.datetime().default(() => new Date().toISOString()),
     })
     .authorization((allow) => [
       allow.guest().to(['create']),  // 任何用户都可以创建

@@ -107,7 +107,7 @@ function SubmissionsTable({ submissions, onDeleteSubmission }: {
             <tbody>
               {submissions.map((submission) => (
                 <tr key={submission.id}>
-                  <td className="submission-time">{submission.submittedAt || '—'}</td>
+                  <td className="submission-time">{submission.createdAt || '—'}</td>
                   <td className="submission-name">{submission.name}</td>
                   <td className="submission-email">
                     <a href={`mailto:${submission.email}`}>{submission.email}</a>
@@ -153,7 +153,7 @@ function SubmissionsTable({ submissions, onDeleteSubmission }: {
                 <strong>Subject:</strong> {selectedSubmission.subject}
               </div>
               <div className="detail-row">
-                <strong>Submission Time:</strong> {selectedSubmission.submittedAt || '—'}
+                <strong>Submission Time:</strong> {selectedSubmission.createdAt || '—'}
               </div>
               <div className="detail-row">
                 <strong>Message:</strong>
