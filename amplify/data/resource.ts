@@ -22,7 +22,7 @@ const schema = a.schema({
       message: a.string().required(),
     })
     .authorization((allow) => [
-      allow.guest().to(['create']),  // 任何用户都可以创建
+      allow.publicApiKey().to(['create']),  // 允许通过API密钥创建（访客）
       allow.authenticated().to(['read', 'delete']),  // 登录用户才能查看和删除
     ]),
 });
