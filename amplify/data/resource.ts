@@ -12,6 +12,20 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.owner()]),
+  Submission: a
+    .model({
+      name: a.string().required(),
+      email: a.string().required(),
+      phone: a.string(),
+      company: a.string(),
+      subject: a.string().required(),
+      message: a.string().required(),
+      submittedAt: a.datetime().default(() => new Date()),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['create']),  // 任何用户都可以创建
+      allow.authenticated().to(['read', 'delete']),  // 登录用户才能查看和删除
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

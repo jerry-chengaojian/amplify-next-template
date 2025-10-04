@@ -1,10 +1,15 @@
 "use client";
 
+import { useState } from 'react';
 import { Amplify } from 'aws-amplify';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '@/amplify/data/resource';
 import './contact.css';
 import outputs from "@/amplify_outputs.json";
 
 Amplify.configure(outputs);
+
+const client = generateClient<Schema>();
 
 export default function ContactPage() {
   return (
@@ -28,6 +33,36 @@ export default function ContactPage() {
 }
 
 function ContactForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    const formData = new FormData(e.currentTarget);
+    const formValues = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      phone: formData.get('phone') as string,
+      company: formData.get('company') as string,
+      subject: formData.get('subject') as string,
+      message: formData.get('message') as string,
+    };
+
+    try {
+      await client.models.Submission.create(formValues);
+      setSubmitStatus('success');
+      e.currentTarget.reset();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="contact-card">
       <div className="card-header">
@@ -37,7 +72,7 @@ function ContactForm() {
         </p>
       </div>
       <div className="card-content">
-        <form className="contact-form">
+        <form className="contact-form" onSubmit={handleSubmit}>
           {/* Name Field */}
           <div className="form-group">
             <label htmlFor="name" className="form-label">
@@ -131,10 +166,23 @@ function ContactForm() {
             <button
               type="submit"
               className="submit-button"
+              disabled={isSubmitting}
             >
-              Submit Form
+              {isSubmitting ? 'Submitting...' : 'Submit Form'}
             </button>
           </div>
+
+          {/* Status Messages */}
+          {submitStatus === 'success' && (
+            <div className="success-message">
+              Thank you for your submission! We'll get back to you soon.
+            </div>
+          )}
+          {submitStatus === 'error' && (
+            <div className="error-message">
+              There was an error submitting your form. Please try again.
+            </div>
+          )}
 
           {/* Privacy Notice */}
           <p className="privacy-notice">
