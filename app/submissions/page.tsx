@@ -1,6 +1,7 @@
 "use client";
 
 import { Amplify } from 'aws-amplify';
+import { useState } from 'react';
 import './submissions.css';
 import outputs from "@/amplify_outputs.json";
 
@@ -71,6 +72,12 @@ const mockSubmissions: Submission[] = [
 ];
 
 export default function SubmissionsPage() {
+  const [submissions, setSubmissions] = useState<Submission[]>(mockSubmissions);
+
+  const handleDeleteSubmission = (id: string) => {
+    setSubmissions(submissions.filter(submission => submission.id !== id));
+  };
+
   return (
     <main className="submissions-main">
       <div className="container">
@@ -84,14 +91,40 @@ export default function SubmissionsPage() {
             </p>
           </div>
 
-          <SubmissionsTable submissions={mockSubmissions} />
+          <SubmissionsTable 
+            submissions={submissions} 
+            onDeleteSubmission={handleDeleteSubmission}
+          />
         </div>
       </div>
     </main>
   )
 }
 
-function SubmissionsTable({ submissions }: { submissions: Submission[] }) {
+function SubmissionsTable({ submissions, onDeleteSubmission }: { 
+  submissions: Submission[], 
+  onDeleteSubmission: (id: string) => void 
+}) {
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleViewDetails = (submission: Submission) => {
+    setSelectedSubmission(submission);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSubmission(null);
+  };
+
+  const handleDelete = () => {
+    if (selectedSubmission) {
+      onDeleteSubmission(selectedSubmission.id);
+      closeModal();
+    }
+  };
+
   return (
     <div className="submissions-card">
       <div className="card-header">
@@ -124,7 +157,12 @@ function SubmissionsTable({ submissions }: { submissions: Submission[] }) {
                   <td className="submission-company">{submission.company}</td>
                   <td className="submission-subject">{submission.subject}</td>
                   <td className="submission-actions">
-                    <button className="view-button">View Details</button>
+                    <button 
+                      className="view-button" 
+                      onClick={() => handleViewDetails(submission)}
+                    >
+                      View Details
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -132,6 +170,49 @@ function SubmissionsTable({ submissions }: { submissions: Submission[] }) {
           </table>
         </div>
       </div>
+
+      {isModalOpen && selectedSubmission && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Submission Details</h3>
+              <button className="modal-close" onClick={closeModal}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-row">
+                <strong>Name:</strong> {selectedSubmission.name}
+              </div>
+              <div className="detail-row">
+                <strong>Email:</strong> {selectedSubmission.email}
+              </div>
+              <div className="detail-row">
+                <strong>Phone:</strong> {selectedSubmission.phone}
+              </div>
+              <div className="detail-row">
+                <strong>Company:</strong> {selectedSubmission.company}
+              </div>
+              <div className="detail-row">
+                <strong>Subject:</strong> {selectedSubmission.subject}
+              </div>
+              <div className="detail-row">
+                <strong>Submission Time:</strong> {selectedSubmission.submittedAt}
+              </div>
+              <div className="detail-row">
+                <strong>Message:</strong>
+                <div className="message-content">{selectedSubmission.message}</div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="modal-button delete-button" onClick={handleDelete}>
+                Delete
+              </button>
+              <button className="modal-button" onClick={closeModal}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
