@@ -513,3 +513,41 @@
     min-width: 100px;
   }
 }
+
+/* Responsive Table Styles */
+.desktop-only {
+  display: table-cell;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+  
+  .submissions-table {
+    font-size: 0.875rem;
+    width: 100%;
+    table-layout: fixed;
+  }
+  
+  .submission-email {
+    width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .submission-actions {
+    width: 40%;
+  }
+  
+  .view-button {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    width: 100%;
+  }
+  
+  .table-container {
+    overflow-x: hidden;
+  }
+}

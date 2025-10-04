@@ -96,24 +96,24 @@ function SubmissionsTable({ submissions, onDeleteSubmission }: {
           <table className="submissions-table">
             <thead>
               <tr>
-                <th>Submission Time</th>
-                <th>Name</th>
+                <th className="desktop-only">Submission Time</th>
+                <th className="desktop-only">Name</th>
                 <th>Email</th>
-                <th>Company</th>
-                <th>Subject</th>
+                <th className="desktop-only">Company</th>
+                <th className="desktop-only">Subject</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {submissions.map((submission) => (
                 <tr key={submission.id}>
-                  <td className="submission-time">{submission.createdAt || '—'}</td>
-                  <td className="submission-name">{submission.name}</td>
+                  <td className="submission-time desktop-only">{submission.createdAt || '—'}</td>
+                  <td className="submission-name desktop-only">{submission.name}</td>
                   <td className="submission-email">
                     <a href={`mailto:${submission.email}`}>{submission.email}</a>
                   </td>
-                  <td className="submission-company">{submission.company || '—'}</td>
-                  <td className="submission-subject">{submission.subject}</td>
+                  <td className="submission-company desktop-only">{submission.company || '—'}</td>
+                  <td className="submission-subject desktop-only">{submission.subject}</td>
                   <td className="submission-actions">
                     <button 
                       className="view-button" 
