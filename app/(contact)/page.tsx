@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '@/amplify/data/resource';
@@ -37,6 +37,7 @@ export default function ContactPage() {
 function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,7 +57,9 @@ function ContactForm() {
     try {
       await client.models.Submission.create(formValues);
       setSubmitStatus('success');
-      e.currentTarget.reset();
+      if (formRef.current) {
+        formRef.current.reset(); // 使用useRef重置表单
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
       setSubmitStatus('error');
@@ -74,7 +77,7 @@ function ContactForm() {
         </p>
       </div>
       <div className="card-content">
-        <form className="contact-form" onSubmit={handleSubmit}>
+        <form className="contact-form" onSubmit={handleSubmit} ref={formRef}>
           {/* Name Field */}
           <div className="form-group">
             <label htmlFor="name" className="form-label">
